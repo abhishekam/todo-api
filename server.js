@@ -1,19 +1,24 @@
 var express = require("express");
+var bodyParser = require("body-parser");
 var app = express();
 var PORT = process.env.PORT || 3000;
+var todos = [];
+var todoItemId = 1;
 
-var todos = [{
-    description:'Have Dinner',
-    id:1,
-    completed: false
-},{
-    description:'Finish Udemy Course',
-    id:2,
-    completed: true
-}];
+app.use(bodyParser.json());
 
 app.get('/todos', function(req, res){
     res.json(todos);
+});
+
+app.post('/todos', function(req, res){
+    var body = req.body;
+    body.id = todoItemId;
+    todoItemId++;
+
+    todos.push(body);
+
+    res.json(body);
 });
 
 app.get('/todos/:id', function(req, res){
