@@ -1,2 +1,3 @@
 .projectile
+*.http
 node_modules/
