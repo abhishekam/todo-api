@@ -45,15 +45,14 @@ app.post('/todos', function(req, res){
 
 app.delete('/todos/:id', function(req, res){
     var todoId = parseInt(req.params.id);
-    var todoItem = _.findWhere(todos, {id: todoId});
-
-    if(todoItem){
-        todos = _.without(todos, todoItem);
-        return res.json(todoItem);
-    }else{
-        return res.status(404).send();
-    }
-
+    db.Todo.destroy({ where: {id: todoId}}).then(function(rows){
+        if(rows === 0){
+            return res.status(404).send();
+        }
+        return res.status(204).send();
+    }).catch(function(e){
+        return res.status(500).send();
+    });
 });
 
 app.put('/todos/:id', function(req, res){
