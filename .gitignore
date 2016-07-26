@@ -1,3 +1,4 @@
 .projectile
+*.sqlite
 *.http
 node_modules/
