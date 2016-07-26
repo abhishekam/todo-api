@@ -100,7 +100,7 @@ app.get('/', function(req, res){
     res.send("At Todo API Root!");
 });
 
-db.sequelize.sync({force: true}).then(function(){
+db.sequelize.sync({force: false}).then(function(){
     app.listen(PORT, function(){
         console.log("Listening on PORT "+PORT+" ...");
     });
