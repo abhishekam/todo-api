@@ -57,29 +57,31 @@ app.delete('/todos/:id', function(req, res){
 
 app.put('/todos/:id', function(req, res){
     var todoId = parseInt(req.params.id);
-    var todoItem = _.findWhere(todos, {id: todoId});
-    var validAttributes = {};
+    var body = _.pick(req.body,'description', 'completed');
+    var attributes = {};
 
-    if(!todoItem){
-        return res.status(404).send();
+    if(body.hasOwnProperty("completed")){
+        attributes.completed = body.completed;
+    }
+    if(body.hasOwnProperty("description")){
+        attributes.description = body.description;
     }
 
-    if(req.body.hasOwnProperty("completed")){
-        if(_.isBoolean(req.body.completed)){
-            validAttributes.completed = req.body.completed;
+    db.Todo.findById(todoId).then(function(todo){
+        if(todo){
+            return todo.update(attributes);
         }else{
-            return res.status(400).send();
+            return new Promise(function(resolve, reject){
+                reject("Not found");
+            });
         }
-    }
-    if(req.body.hasOwnProperty("description")){
-        if(_.isString(req.body.description) && req.body.description.trim().length >  0){
-            validAttributes.description = req.body.description.trim();
-        }else{
-            return res.status(400).send();
-        }
-    }
-    _.extend(todoItem, validAttributes);
-    res.json(todoItem);
+    }, function(e){
+        res.status(500).send();
+    }).then(function(todo){
+        res.json(todo.toJSON());
+    }, function(e){
+        res.status(400).json(e);
+    });
 });
 
 app.get('/todos/:id', function(req, res){
